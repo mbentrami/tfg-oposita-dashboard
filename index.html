@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marwa Bentayeb Er Rami - TFG Gestión de la Información y Contenidos Digitales - Universidad de Murcia (UMU)</title>
+
+  <!-- fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- hoja de estilos -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- estructura principal -->
+  <div class="app">
+
+    <!-- barra superior -->
+    <header class="topbar">
+
+      <!-- logos -->
+      <div class="marca">
+        <span class="logo">OPOSITA</span>
+        <span class="separador" aria-hidden="true"></span>
+        <span class="submarcas"><b>FP</b> · <b>Secundaria</b> · <b>Primaria</b></span>
+      </div>
+
+    </header>
+
+    <!-- portada -->
+    <section class="intro" aria-labelledby="titulo-informe">
+
+      <div class="intro-inner">
+
+        <!-- texto principal -->
+        <div class="intro-contenido">
+
+          <!-- etiqueta superior -->
+          <p class="eyebrow">
+            <span class="etiqueta-informe">DASHBOARD</span>
+            <span class="punto" aria-hidden="true"></span>
+            <span>Benchmark sectorial · YouTube</span>
+            <span class="punto" aria-hidden="true"></span>
+            <span>2025 – 2026</span>
+          </p>
+
+          <!-- titulo -->
+          <h1 id="titulo-informe">
+            Inteligencia competitiva del sector de oposiciones <em>en YouTube.</em>
+          </h1>
+
+          <!-- descripcion -->
+          <p class="lede">
+            Análisis del posicionamiento de OPOSITA frente a los principales canales del sector:
+            estrategia de contenido, rendimiento por categoría y mapa de oportunidades,
+            a partir de datos públicos de YouTube.
+          </p>
+
+        </div>
+
+        <!-- logos secundarios -->
+        <div class="intro-logos">
+          <img src="img/opositafp.png" alt="Oposita FP" class="logo-marca" />
+          <img src="img/opsitasecundaria.png" alt="Oposita Secundaria" class="logo-marca" />
+          <img src="img/opositaprimaria.png" alt="Oposita Primaria" class="logo-marca" />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- navegacion -->
+    <nav class="tabs" role="tablist" aria-label="Páginas del dashboard">
+
+      <!-- tab 01 -->
+      <button class="tab" role="tab" aria-selected="true"
+              data-tab="vision"
+              data-src="https://datastudio.google.com/embed/reporting/39a92426-acfd-4b5e-9aa6-2b4dc2c73720/page/p_t9drm0mj3d">
+        <span class="tab-nombre"><span class="tab-num">01</span> Visión general</span>
+        <span class="tab-desc">Posicionamiento general del sector</span>
+      </button>
+
+      <!-- tab 02 -->
+      <button class="tab" role="tab" aria-selected="false"
+              data-tab="mercado"
+              data-src="https://datastudio.google.com/embed/reporting/39a92426-acfd-4b5e-9aa6-2b4dc2c73720/page/p_6fcwqc3f3d">
+        <span class="tab-nombre"><span class="tab-num">02</span> El mercado</span>
+        <span class="tab-desc">Estrategia y rendimiento del sector</span>
+      </button>
+
+      <!-- tab 03 -->
+      <button class="tab" role="tab" aria-selected="false"
+              data-tab="competidores"
+              data-src="https://datastudio.google.com/embed/reporting/39a92426-acfd-4b5e-9aa6-2b4dc2c73720/page/p_6pntyj3n3d">
+        <span class="tab-nombre"><span class="tab-num">03</span> Competidores</span>
+        <span class="tab-desc">Desglose por canal competidor</span>
+      </button>
+
+      <!-- tab 04 -->
+      <button class="tab" role="tab" aria-selected="false"
+              data-tab="oposita"
+              data-src="https://datastudio.google.com/embed/reporting/39a92426-acfd-4b5e-9aa6-2b4dc2c73720/page/p_bao9issj3d">
+        <span class="tab-nombre"><span class="tab-num">04</span> OPOSITA</span>
+        <span class="tab-desc">Estrategia y rendimiento de OPOSITA</span>
+      </button>
+
+      <!-- tab 05 -->
+      <button class="tab" role="tab" aria-selected="false"
+              data-tab="desglose"
+              data-src="https://datastudio.google.com/embed/reporting/39a92426-acfd-4b5e-9aa6-2b4dc2c73720/page/p_wd3dkyyg3d">
+        <span class="tab-nombre"><span class="tab-num">05</span> Desglose OPOSITA</span>
+        <span class="tab-desc">Rendimiento por canal y top vídeos</span>
+      </button>
+
+      <!-- tab 06 -->
+      <button class="tab" role="tab" aria-selected="false"
+              data-tab="comparativa"
+              data-src="https://datastudio.google.com/embed/reporting/39a92426-acfd-4b5e-9aa6-2b4dc2c73720/page/p_ixhauzag3d">
+        <span class="tab-nombre"><span class="tab-num">06</span> Comparativa</span>
+        <span class="tab-desc">Benchmarking por categoría de contenido</span>
+      </button>
+
+      <!-- tab 07 -->
+      <button class="tab" role="tab" aria-selected="false"
+              data-tab="oportunidades"
+              data-src="https://datastudio.google.com/embed/reporting/39a92426-acfd-4b5e-9aa6-2b4dc2c73720/page/p_vbg3tsoi3d">
+        <span class="tab-nombre"><span class="tab-num">07</span> Oportunidades</span>
+        <span class="tab-desc">Mapa de gaps y retorno potencial</span>
+      </button>
+
+      <!-- boton ampliar -->
+      <div class="tabs-acciones">
+        <button class="btn-ampliar" id="btn-ampliar" aria-label="Ampliar dashboard a pantalla completa">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M3 6V3h3M13 6V3h-3M3 10v3h3M13 10v3h-3" stroke-linecap="round" />
+          </svg>
+          Ampliar
+        </button>
+      </div>
+
+    </nav>
+
+    <!-- dashboard -->
+    <main class="stage" id="stage">
+
+      <!-- iframe -->
+      <iframe
+        id="iframe-dashboard"
+        src="https://datastudio.google.com/embed/reporting/39a92426-acfd-4b5e-9aa6-2b4dc2c73720/page/p_t9drm0mj3d"
+        title="Dashboard YouTube Intelligence — OPOSITA"
+        referrerpolicy="no-referrer"
+        loading="eager"
+        allowfullscreen>
+      </iframe>
+
+      <!-- pagina activa -->
+      <span class="etiqueta-esquina mono" id="etiqueta-esquina">
+        Visión general
+      </span>
+
+    </main>
+
+    <!-- footer -->
+    <footer class="footer">
+      <span>Marwa Bentayeb Er Rami - TFG Gestión de la Información y Contenidos Digitales - Universidad de Murcia (UMU)</span>
+      <span>2025 - 2026</span>
+    </footer>
+
+  </div>
+
+  <!-- javascript -->
+  <script src="script.js"></script>
+
+</body>
+</html>

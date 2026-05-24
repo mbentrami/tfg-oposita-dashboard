@@ -1,0 +1,459 @@
+/* colores base */
+:root {
+  --bg:      #ECEAE3;
+  --canvas:  #E4E1D9;
+  --surface: #FFFFFF;
+  --line:    #DDD9D0;
+  --ink:     #141412;
+  --ink-2:   #3A3A36;
+  --muted:   #6B6B67;
+  --faint:   #AEADA6;
+}
+
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* estructura principal */
+.app, .topbar, .intro, .tabs, .stage, .footer {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* reset general */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* tipografia secundaria */
+.mono {
+  font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* layout principal */
+.app {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* barra superior */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+/* logo y marcas */
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo {
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* linea separadora */
+.separador {
+  display: block;
+  width: 1px;
+  height: 16px;
+  background: var(--line);
+}
+
+/* submarcas */
+.submarcas {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.submarcas b {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+/* info derecha */
+.topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* punto decorativo */
+.punto {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--faint);
+  vertical-align: middle;
+}
+
+/* portada */
+.intro {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 36px 48px 28px;
+}
+
+/* contenido intro */
+.intro-inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 48px;
+  align-items: center;
+}
+
+/* bloque texto */
+.intro-contenido {
+  min-width: 0;
+}
+
+/* logos intro */
+.intro-logos {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}
+
+/* tamaño logos */
+.logo-marca {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* linea superior */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 14px;
+}
+
+/* etiqueta dashboard */
+.etiqueta-informe {
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+}
+
+/* titulo principal */
+.intro h1 {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* parte secundaria */
+.intro h1 em {
+  font-style: normal;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* descripcion */
+.lede {
+  margin: 12px 0 0;
+  max-width: 60ch;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+/* barra tabs */
+.tabs {
+  position: sticky;
+  top: 56px;
+  z-index: 28;
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 0 12px 0 16px;
+  height: 56px;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+/* scroll tabs */
+.tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabs::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* estilo tab */
+.tab {
+  position: relative;
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0 16px;
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  transition: color 120ms ease;
+  flex-shrink: 0;
+}
+
+/* hover tab */
+.tab:hover {
+  color: var(--ink-2);
+}
+
+/* nombre tab */
+.tab-nombre {
+  font-weight: 500;
+}
+
+/* numero tab */
+.tab-num {
+  font-size: 10px;
+  color: var(--faint);
+  margin-right: 5px;
+  letter-spacing: 0.04em;
+  font-weight: 400;
+}
+
+/* descripcion tab */
+.tab-desc {
+  font-size: 10.5px;
+  color: var(--faint);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+/* tab activo */
+.tab[aria-selected="true"] {
+  color: var(--ink);
+}
+
+.tab[aria-selected="true"] .tab-desc {
+  opacity: 1;
+}
+
+/* linea activa */
+.tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: -1px;
+  height: 1px;
+  background: var(--ink);
+}
+
+/* acciones derecha */
+.tabs-acciones {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding-right: 4px;
+}
+
+/* boton ampliar */
+.btn-ampliar {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-size: 12px;
+  padding: 0 12px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+
+/* hover boton */
+.btn-ampliar:hover {
+  border-color: var(--ink-2);
+  color: var(--ink);
+}
+
+/* click boton */
+.btn-ampliar:active {
+  background: var(--bg);
+}
+
+/* icono boton */
+.btn-ampliar svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+}
+
+/* zona dashboard */
+.stage {
+  position: relative;
+  background: var(--canvas);
+  overflow: hidden;
+  height: calc(100vh - 112px);
+  min-height: 520px;
+  --menu-looker: 50px;
+}
+
+/* iframe dashboard */
+.stage iframe {
+  width: calc(100% + var(--menu-looker));
+  height: 100%;
+  margin-left: calc(-1 * var(--menu-looker));
+  border: none;
+  display: block;
+  background: var(--canvas);
+}
+
+/* etiqueta flotante */
+.etiqueta-esquina {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* fullscreen */
+.stage:fullscreen {
+  background: var(--canvas);
+}
+
+.stage:fullscreen .etiqueta-esquina {
+  display: none;
+}
+
+/* footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 32px;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* responsive */
+@media (max-width: 920px) {
+
+  /* padding movil */
+  .intro {
+    padding: 28px 24px 20px;
+  }
+
+  /* columnas movil */
+  .intro-inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  /* logos movil */
+  .logo-marca {
+    height: 70px;
+  }
+
+  /* tabs movil */
+  .tabs {
+    scrollbar-width: none;
+    padding-left: 12px;
+  }
+
+  /* oculta scrollbar */
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* oculta descripcion */
+  .tab-desc {
+    display: none;
+  }
+
+  /* oculta submarcas */
+  .submarcas {
+    display: none;
+  }
+
+}
