@@ -1,0 +1,365 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        16
+      ],
+      "id": "01bcde84-4266-4e78-b7b2-21142fe2761a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "// lista canales\nconst channels = [\n  { channelId: 'UCmVtiyWshob_ihJRY8Us3-g', channelTitle: 'Oposita FP' },\n  { channelId: 'UChq-xHPTYhloLVTlCWohrzQ', channelTitle: 'Oposita Secundaria' },\n  { channelId: 'UC0z_DeXW73JcINo9BxvEE9Q', channelTitle: 'Oposita Primaria' },\n  { channelId: 'UCSLXLgh8FMfAqprkRG1-V9A', channelTitle: 'Oposiciones Docentes' },\n  { channelId: 'UCMf8p8-hghEP6obesfMtdNQ', channelTitle: 'OpoMind' },\n  { channelId: 'UCQDCO-oXxQWohtbwx9H-FYQ', channelTitle: 'Kadoora' },\n  { channelId: 'UCjTjLKDbxWu8yFeNFVBjYHQ', channelTitle: 'Eponline' },\n];\n\n// une ids\n\nconst allIds = channels.map(c => c.channelId).join(',');\n\n// devuelve datos\nreturn [{\n  json: {\n    channelIds: allIds,\n    apiKey: 'AIzaSyB5H-tCeMo8wyUQR_E3E4MQPZZGihb8IPY',\n    channels: channels\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        16
+      ],
+      "id": "c1f071c0-e0e9-49a4-9fa1-169bdab0a6cc",
+      "name": "Code in JavaScript",
+      "notesInFlow": true,
+      "notes": "Define los 7 canales de YouTube a analizar"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/channels",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails,statistics"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.channelIds }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        16
+      ],
+      "id": "26472320-fd94-4814-b8b3-3b772d02eaae",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Coge la respuesta de YouTube y extrae los datos de cada canal\nconst response = $input.first().json;\nconst channels = response.items;\nconst apiKey = 'AIzaSyB5H-tCeMo8wyUQR_E3E4MQPZZGihb8IPY'; \n\nreturn channels.map(channel => ({\n  json: {\n    channelId: channel.id,                                                    // ID del canal\n    channelTitle: channel.snippet.title,                                      // nombre del canal\n    subscriberCount: parseInt(channel.statistics.subscriberCount || '0', 10), // suscriptores\n    totalViewCount: parseInt(channel.statistics.viewCount || '0', 10),        // visualizaciones totales\n    videoCount: parseInt(channel.statistics.videoCount || '0', 10),           // número de vídeos\n    uploadsPlaylistId: channel.contentDetails.relatedPlaylists.uploads,       // ID de la playlist de uploads, para sacar los vídeos\n    apiKey: apiKey\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        16
+      ],
+      "id": "7c331e2d-fbfb-461e-ba38-fab6cddc3713",
+      "name": "Code in JavaScript1",
+      "notesInFlow": true,
+      "notes": "Extrae y organiza los datos de cada canal (nombre, suscriptores, visualizaciones, número de vídeos y playlist de uploads) para pasarlos al siguiente nodo."
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        880,
+        0
+      ],
+      "id": "8c8e7105-f558-4125-87fb-3863d8c70f69",
+      "name": "Loop Over Items",
+      "notesInFlow": true,
+      "notes": "Itera canal por canal para extraer todos sus vídeos"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $json.uploadsPlaylistId }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            },
+            {
+              "name": "key",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken }}",
+              "limitPagesFetched": true,
+              "maxRequests": 20
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1136,
+        16
+      ],
+      "id": "3a10c773-4aca-4cc8-b376-1f997e992def",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst channelData = $('Code in JavaScript1').first().json;\nconst videoIds = [];\n\nconst channelId = channelData.channelId || '';\nconst channelTitle = channelData.channelTitle || '';\nconst subscriberCount = channelData.subscriberCount || 0;\nconst totalViewCount = channelData.totalViewCount || 0;\nconst videoCount = channelData.videoCount || 0;\nconst uploadsPlaylistId = channelData.uploadsPlaylistId || '';\nconst apiKey = channelData.apiKey || '';\n\nfor (const item of allItems) {\n  const items = item.json.items || [];\n  for (const playlistItem of items) {\n    if (playlistItem.contentDetails?.videoId) {\n      videoIds.push(playlistItem.contentDetails.videoId);\n    }\n  }\n}\n\nconst batches = [];\nfor (let i = 0; i < videoIds.length; i += 50) {\n  batches.push({\n    json: {\n      videoIdsBatch: videoIds.slice(i, i + 50).join(','),\n      channelId, channelTitle, subscriberCount,\n      totalViewCount, videoCount, uploadsPlaylistId, apiKey\n    }\n  });\n}\n\nreturn batches;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        16
+      ],
+      "id": "51fe7ae5-9557-484c-96d4-da87ce5b5ae2",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,statistics,contentDetails"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.videoIdsBatch }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1584,
+        16
+      ],
+      "id": "fba717d1-2d0a-4d51-8c0c-ce35dd0a5f50",
+      "name": "HTTP Request2",
+      "notesInFlow": true,
+      "notes": "Pide a YouTube los datos completos de cada vídeo: título, vistas, likes, comentarios, duración y etiquetas."
+    },
+    {
+      "parameters": {
+        "jsCode": "function clasificar(titulo, descripcion, tags) {\n\n  //  para recorta la descripcion para evitar ruido\n  const descCorta = (descripcion || '').slice(0, 300);\n\n  // convierte tags en texto\n  const tagsTexto = Array.isArray(tags)\n    ? tags.join(' ')\n    : (tags || '');\n\n  // version limpia del titulo\n  const t = normalizar(titulo || '');\n\n  // esto junta todo el contenido del video\n  const texto = normalizar(\n    `${titulo || ''} ${descCorta} ${tagsTexto}`\n  );\n\n  // el orden importa por lo que primero reglas especificas y luego generales\n  if (esComercialOpositaInstitucional(t)) return 'Información comercial/institucional';\n  if (esConvocatoria(t, texto))           return 'Información sobre convocatorias';\n  if (esClaseTemario(t, texto))           return 'Clase/Temario';\n  if (esConsejosPrioritarios(t))          return 'Consejos para opositar';\n  if (esMetodologia(t, texto))            return 'Metodología para opositar';\n  if (esTestimonio(t, texto))             return 'Testimonio';\n  if (esComercial(t, texto))              return 'Información comercial/institucional';\n  if (esPsicologia(t, texto))             return 'Psicología del opositor';\n  if (esFallos(t, texto))                 return 'Fallos al opositar';\n  if (esPlanificacion(t, texto))          return 'Planificación de estudio';\n  if (esTecnicasEstudio(t, texto))        return 'Técnicas de estudio';\n  if (esConsejos(t, texto))               return 'Consejos para opositar';\n\n  // fallback final\n  return 'Sin clasificar';\n}\n\n\n\n// // para limpira el texto minusculas, sin tildes y sin simbolos raros\nfunction normalizar(texto) {\n  return (texto || '')\n    .normalize('NFD')\n    .replace(/[\\u0300-\\u036f]/g, '')\n    .toLowerCase()\n    .replace(/[^\\w\\sñ]/g, ' ')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\n\n// busca una palabra exacta y evita errores \nfunction contiene(texto, palabra) {\n  return new RegExp(`\\\\b${palabra}\\\\b`, 'i').test(texto);\n}\n\n\n// cuenta coincidencias\nfunction cuenta(texto, palabras) {\n\n  let n = 0;\n\n  for (const p of palabras) {\n    if (contiene(texto, p)) n++;\n  }\n\n  return n;\n}\n\n\n// detecta videos comerciales de oposita\nfunction esComercialOpositaInstitucional(t) {\n\n  // comprueba si aparece la marca\n  const marca =\n    contiene(t, 'opositafp') ||\n    /oposita\\s+(fp|primaria|secundaria)/.test(t) ||\n    contiene(t, 'oposita primaria');\n\n  if (!marca) return false;\n\n  // frases promocionales tipicas\n  if (contiene(t, 'te preparamos')) return true;\n  if (contiene(t, 'asi te preparamos')) return true;\n  if (contiene(t, 'quien te prepara')) return true;\n\n  // casos mas concretos\n  if (contiene(t, 'funcionarios') &&\n      contiene(t, 'exmiembros')) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// detecta contenido sobre convocatorias\nfunction esConvocatoria(t, texto) {\n\n  // palabras frecuentes\n  if (contiene(t, 'convocatoria')) return true;\n  if (contiene(t, 'convocatorias')) return true;\n\n  // detecta cosas tipo \"300 plazas\"\n  if (/\\b\\d+\\s+plazas?\\b/.test(t)) {\n    return true;\n  }\n\n  if (contiene(t, 'baremo')) return true;\n\n  // relacion provincia + año + oposiciones\n  const provincias =\n    /\\b(andalucia|madrid|murcia|galicia|cantabria|valencia)\\b/;\n\n  const tieneProvincia = provincias.test(t);\n  const tieneAño = /\\b(2025|2026|2027)\\b/.test(t);\n\n  if (tieneProvincia &&\n      tieneAño &&\n      contiene(t, 'oposiciones')) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// detecta clases y temario\nfunction esClaseTemario(t, texto) {\n\n  const keywords = [\n    'discapacidad',\n    'alumnado',\n    'neae',\n    'lomloe',\n    'atencion a la diversidad'\n  ];\n\n  // con una keyword ya basta\n  if (cuenta(t, keywords) >= 1) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// consejos muy concretos\nfunction esConsejosPrioritarios(t) {\n\n  // titulos tipo \"el secreto que nadie cuenta\"\n  if (contiene(t, 'secreto') &&\n      contiene(t, 'nadie')) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// contenido metodologico\nfunction esMetodologia(t, texto) {\n\n  // estrategias de preparacion\n  if (contiene(t, 'hilo conductor') &&\n      !contiene(t, 'secreto')) {\n    return true;\n  }\n\n  // supuestos practicos\n  if (contiene(t, 'supuesto practico') &&\n      contiene(t, 'caso real')) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// testimonios y experiencias personales\nfunction esTestimonio(t, texto) {\n\n  // muchos videos de oposita son testimoniales\n  const marcaOposita =\n    contiene(t, 'opositafp') ||\n    /oposita\\s+fp/.test(t) ||\n    /oposita\\s+secundaria/.test(t) ||\n    /oposita\\s+primaria/.test(t);\n\n  if (marcaOposita) return true;\n\n  // frases tipicas\n  if (contiene(t, 'testimonio')) return true;\n  if (/yo\\s+gane\\s+mi\\s+plaza/.test(t)) return true;\n\n  // experiencias personales\n  if (/\\bmi\\s+experiencia\\s+real/.test(t)) return true;\n  if (/\\bmi\\s+primera\\s+vez\\b/.test(t)) return true;\n\n  return false;\n}\n\n\n// contenido promocional general\nfunction esComercial(t, texto) {\n\n  // academias y preparacion\n  if (/\\bacademia\\s+(online\\s+)?(de\\s+)?oposiciones?\\b/.test(t)) {\n    return true;\n  }\n\n  // matriculas y promociones\n  if (contiene(t, 'plazo de matricula')) return true;\n  if (contiene(t, 'abierto plazo')) return true;\n\n  return false;\n}\n\n\n// contenido emocional o mental\nfunction esPsicologia(t, texto) {\n\n  const keywords = [\n    'cerebro',\n    'mente',\n    'ansiedad',\n    'procrastinas',\n    'desconecta'\n  ];\n\n  if (cuenta(t, keywords) >= 1) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// errores frecuentes al opositar\nfunction esFallos(t, texto) {\n\n  // detecta \"errores\", \"fallos\", etc\n  if (/\\b(error|errores)\\b/.test(t)) {\n    return true;\n  }\n\n  // frases negativas\n  if (contiene(t, 'nunca debes')) return true;\n  if (contiene(t, 'no debes hacer')) return true;\n\n  return false;\n}\n\n\n// organizacion y planificacion\nfunction esPlanificacion(t, texto) {\n\n  if (contiene(t, 'agenda')) return true;\n  if (contiene(t, 'compaginar')) return true;\n  if (contiene(t, 'organizar')) return true;\n\n  // evita confundir con \"rutina de campeones\"\n  if (contiene(t, 'rutina') &&\n      !contiene(t, 'campeones')) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// tecnicas de estudio\nfunction esTecnicasEstudio(t, texto) {\n\n  // tecnicas concretas\n  if (contiene(t, 'tecnica') &&\n      (contiene(t, 'repaso') ||\n       contiene(t, 'estudio') ||\n       contiene(t, 'memoria'))) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// categoria general de consejos\nfunction esConsejos(t, texto) {\n\n  if (contiene(t, 'consejos')) return true;\n  if (contiene(t, 'guia')) return true;\n\n  // contenido tipo \"como aprobar oposiciones\"\n  if (contiene(t, 'como aprobar') &&\n      contiene(t, 'oposiciones')) {\n    return true;\n  }\n\n  return false;\n}\n\n\n// obtiene todos los items de n8n\nconst items = $input.all();\n\nconst resultado = [];\n\nfor (const item of items) {\n\n  // datos del video\n  const v = item.json || {};\n\n  // intenta leer titulo plano o snippet\n  const titulo =\n    v.title ||\n    (v.snippet && v.snippet.title) ||\n    '';\n\n  // descripcion del video\n  const descripcion =\n    v.description ||\n    (v.snippet && v.snippet.description) ||\n    '';\n\n  // tags del video\n  const tags =\n    v.tags ||\n    (v.snippet && v.snippet.tags) ||\n    [];\n\n  // clasifica contenido\n  const categoria =\n    clasificar(titulo, descripcion, tags);\n\n  // añade nueva propiedad\n  resultado.push({\n    json: {\n      ...v,\n      categoriaContenido: categoria\n    }\n  });\n}\n\n// devuelve array final a n8n\nreturn resultado;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        16
+      ],
+      "id": "548ae2c3-c836-4c23-b379-32bc9f45e40f",
+      "name": "Code in JavaScript3",
+      "notesInFlow": true,
+      "notes": "Transforma los datos de YouTube al formato de la tabla BigQuery"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "insert",
+        "projectId": {
+          "__rl": true,
+          "value": "tfg-oposita-dashboard",
+          "mode": "list",
+          "cachedResultName": "tfg-oposita-dashboard",
+          "cachedResultUrl": "https://console.cloud.google.com/bigquery?project=tfg-oposita-dashboard"
+        },
+        "datasetId": {
+          "__rl": true,
+          "value": "youtube_data",
+          "mode": "list",
+          "cachedResultName": "youtube_data"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "videos",
+          "mode": "list",
+          "cachedResultName": "videos"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleBigQuery",
+      "typeVersion": 2.1,
+      "position": [
+        2048,
+        16
+      ],
+      "id": "0fc658fe-2241-4ea7-8050-b83b36f06a9a",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "googleApi": {
+          "id": "F9TyOyrAflCCcZuO",
+          "name": "Google Service Account account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "54e97d7d-c4c1-447e-951b-9f437f515426",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8713a5c3f2b163640e3be62699d04469f7ef2dc8936b6712f1bacca60f7699c7"
+  },
+  "id": "ngH7TDfTDkHRWicA",
+  "tags": []
+}
